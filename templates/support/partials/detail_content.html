@@ -1,0 +1,286 @@
+{% load djicons i18n %}
+
+<div class="p-4" x-data="{
+    deleteModal: false,
+    assignModal: false
+}">
+    <!-- Header with back button -->
+    <div class="flex items-center gap-4 mb-6">
+        <button class="btn btn-ghost btn-sm"
+                hx-get="{% url 'support:list' %}"
+                hx-target="#main-content-area"
+                hx-push-url="true">
+            {% icon "arrow-back-outline" %}
+        </button>
+        <div class="flex-1">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-{% if ticket.priority == 'urgent' %}error{% elif ticket.priority == 'high' %}warning{% elif ticket.priority == 'medium' %}primary{% else %}neutral{% endif %}/10 rounded-full flex items-center justify-center">
+                    {% icon "ticket-outline" css_class="text-2xl text-{% if ticket.priority == 'urgent' %}error{% elif ticket.priority == 'high' %}warning{% elif ticket.priority == 'medium' %}primary{% else %}base-content/60{% endif %}" %}
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold">{{ ticket.subject }}</h1>
+                    <div class="flex items-center gap-2 mt-1">
+                        <span class="text-sm text-base-content/50 font-mono">{{ ticket.ticket_number }}</span>
+                        <span class="badge badge-sm color-{% if ticket.status == 'open' %}primary{% elif ticket.status == 'in_progress' %}warning{% elif ticket.status == 'waiting_customer' %}neutral{% elif ticket.status == 'resolved' %}success{% else %}base{% endif %}">
+                            {{ ticket.get_status_display }}
+                        </span>
+                        <span class="badge badge-sm color-{% if ticket.priority == 'urgent' %}error{% elif ticket.priority == 'high' %}warning{% elif ticket.priority == 'medium' %}primary{% else %}neutral{% endif %}">
+                            {{ ticket.get_priority_display }}
+                        </span>
+                        {% if ticket.category %}
+                        <span class="badge badge-sm color-{{ ticket.category.color }}">{{ ticket.category.name }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="flex gap-2">
+            {% if ticket.status == 'open' or ticket.status == 'in_progress' or ticket.status == 'waiting_customer' %}
+            <button class="btn btn-outline btn-sm color-primary"
+                    hx-post="{% url 'support:assign' ticket_id=ticket.id %}"
+                    hx-target="#main-content-area"
+                    hx-swap="innerHTML">
+                {% icon "person-outline" %}
+                {% trans "Assign to Me" %}
+            </button>
+            <button class="btn btn-sm color-success"
+                    hx-post="{% url 'support:resolve' ticket_id=ticket.id %}"
+                    hx-target="#main-content-area"
+                    hx-swap="innerHTML">
+                {% icon "checkmark-outline" %}
+                {% trans "Resolve" %}
+            </button>
+            <button class="btn btn-outline btn-sm"
+                    hx-post="{% url 'support:close' ticket_id=ticket.id %}"
+                    hx-target="#main-content-area"
+                    hx-swap="innerHTML">
+                {% icon "checkmark-done-outline" %}
+                {% trans "Close" %}
+            </button>
+            {% endif %}
+            {% if ticket.status == 'resolved' or ticket.status == 'closed' %}
+            <button class="btn btn-outline btn-sm color-warning"
+                    hx-post="{% url 'support:reopen' ticket_id=ticket.id %}"
+                    hx-target="#main-content-area"
+                    hx-swap="innerHTML">
+                {% icon "refresh-outline" %}
+                {% trans "Reopen" %}
+            </button>
+            {% endif %}
+            <button class="btn btn-outline btn-sm color-error"
+                    @click="deleteModal = true">
+                {% icon "trash-outline" %}
+            </button>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Left Column: Ticket Info -->
+        <div class="lg:col-span-1">
+            <!-- Customer Card -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="card-title">{% icon "person-outline" css_class="text-primary" %} {% trans "Customer" %}</h3>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list">
+                        {% if ticket.customer %}
+                        <div class="list-item">
+                            <div class="list-item-start">
+                                <div class="avatar avatar-primary">
+                                    <span>{{ ticket.customer.initials }}</span>
+                                </div>
+                            </div>
+                            <div class="list-item-content">
+                                <div class="list-item-label">{{ ticket.customer.name }}</div>
+                                {% if ticket.customer.email %}
+                                <div class="list-item-note">{{ ticket.customer.email }}</div>
+                                {% endif %}
+                                {% if ticket.customer.phone %}
+                                <div class="list-item-note">{{ ticket.customer.phone }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="list-item">
+                            <div class="list-item-content">
+                                <div class="list-item-label text-base-content/40">{% trans "No customer assigned" %}</div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assignment & Category Card -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="card-title">{% icon "information-circle-outline" css_class="text-primary" %} {% trans "Details" %}</h3>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list">
+                        <div class="list-item">
+                            <div class="list-item-content">
+                                <div class="list-item-note">{% trans "Assigned To" %}</div>
+                                <div class="list-item-label">{{ ticket.assigned_to_name|default:"-" }}</div>
+                            </div>
+                        </div>
+                        <div class="list-item">
+                            <div class="list-item-content">
+                                <div class="list-item-note">{% trans "Category" %}</div>
+                                <div class="list-item-label">
+                                    {% if ticket.category %}
+                                    <span class="badge badge-sm color-{{ ticket.category.color }}">
+                                        {% icon ticket.category.icon %}
+                                        {{ ticket.category.name }}
+                                    </span>
+                                    {% else %}
+                                    -
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-item">
+                            <div class="list-item-content">
+                                <div class="list-item-note">{% trans "Created" %}</div>
+                                <div class="list-item-label">{{ ticket.created_at|date:"d/m/Y H:i" }}</div>
+                            </div>
+                        </div>
+                        {% if ticket.resolved_at %}
+                        <div class="list-item">
+                            <div class="list-item-content">
+                                <div class="list-item-note">{% trans "Resolved" %}</div>
+                                <div class="list-item-label">{{ ticket.resolved_at|date:"d/m/Y H:i" }}</div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if ticket.closed_at %}
+                        <div class="list-item">
+                            <div class="list-item-content">
+                                <div class="list-item-note">{% trans "Closed" %}</div>
+                                <div class="list-item-label">{{ ticket.closed_at|date:"d/m/Y H:i" }}</div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLA Card -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="card-title">{% icon "timer-outline" css_class="text-primary" %} {% trans "SLA Status" %}</h3>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list">
+                        <div class="list-item">
+                            <div class="list-item-start">
+                                {% if ticket.first_response_at %}
+                                {% icon "checkmark-circle-outline" css_class="text-xl text-success" %}
+                                {% elif ticket.is_sla_breached_response %}
+                                {% icon "alert-circle-outline" css_class="text-xl text-error" %}
+                                {% else %}
+                                {% icon "time-outline" css_class="text-xl text-warning" %}
+                                {% endif %}
+                            </div>
+                            <div class="list-item-content">
+                                <div class="list-item-note">{% trans "First Response" %}</div>
+                                <div class="list-item-label">
+                                    {% if ticket.first_response_at %}
+                                    {{ ticket.response_time_hours }}h
+                                    <span class="text-sm text-success">({% trans "responded" %})</span>
+                                    {% elif ticket.is_sla_breached_response %}
+                                    {{ ticket.response_time_hours }}h
+                                    <span class="badge badge-sm color-error">{% trans "BREACHED" %}</span>
+                                    {% else %}
+                                    {{ ticket.response_time_hours }}h {% trans "elapsed" %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-item">
+                            <div class="list-item-start">
+                                {% if ticket.resolved_at %}
+                                {% icon "checkmark-circle-outline" css_class="text-xl text-success" %}
+                                {% elif ticket.is_sla_breached_resolution %}
+                                {% icon "alert-circle-outline" css_class="text-xl text-error" %}
+                                {% else %}
+                                {% icon "time-outline" css_class="text-xl text-warning" %}
+                                {% endif %}
+                            </div>
+                            <div class="list-item-content">
+                                <div class="list-item-note">{% trans "Resolution" %}</div>
+                                <div class="list-item-label">
+                                    {% if ticket.resolved_at %}
+                                    {{ ticket.resolution_time_hours }}h
+                                    <span class="text-sm text-success">({% trans "resolved" %})</span>
+                                    {% elif ticket.is_sla_breached_resolution %}
+                                    {{ ticket.resolution_time_hours }}h
+                                    <span class="badge badge-sm color-error">{% trans "BREACHED" %}</span>
+                                    {% else %}
+                                    {{ ticket.resolution_time_hours }}h {% trans "elapsed" %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Message Thread -->
+        <div class="lg:col-span-2">
+            <!-- Description -->
+            {% if ticket.description %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="card-title">{% icon "document-text-outline" css_class="text-primary" %} {% trans "Description" %}</h3>
+                </div>
+                <div class="card-body">
+                    <p class="text-sm" style="white-space: pre-wrap;">{{ ticket.description }}</p>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Messages Thread -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">{% icon "chatbubbles-outline" css_class="text-primary" %} {% trans "Messages" %}</h3>
+                    <span class="badge">{{ ticket_messages|length }}</span>
+                </div>
+                <div class="card-body p-0" id="ticket-messages">
+                    {% include "support/partials/ticket_messages.html" %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-backdrop" :data-state="deleteModal ? 'open' : 'closed'" @click.self="deleteModal = false">
+        <div class="modal modal-sm">
+            <div class="modal-header">
+                <h3 class="modal-title">{% trans "Delete Ticket" %}</h3>
+                <button class="modal-close" @click="deleteModal = false">
+                    {% icon "close-outline" %}
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>{% trans "Are you sure you want to delete ticket" %} <strong>{{ ticket.ticket_number }}</strong>?</p>
+                <p class="text-sm text-base-content/60 mt-2">{% trans "This action can be undone by an administrator." %}</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost btn-sm" @click="deleteModal = false">
+                    {% trans "Cancel" %}
+                </button>
+                <button class="btn btn-sm color-error"
+                        hx-post="{% url 'support:delete' ticket.id %}"
+                        hx-target="#main-content-area"
+                        hx-swap="innerHTML"
+                        @click="deleteModal = false">
+                    {% icon "trash-outline" %}
+                    {% trans "Delete" %}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

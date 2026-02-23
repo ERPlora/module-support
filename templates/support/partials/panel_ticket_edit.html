@@ -1,0 +1,98 @@
+{% load djicons i18n %}
+
+<!-- Header -->
+<div class="side-sheet-header">
+    <h3 class="sheet-title">{% trans "Edit Ticket" %} {{ ticket.ticket_number }}</h3>
+    <button class="sheet-close" @click="closePanel()">
+        {% icon "close-outline" %}
+    </button>
+</div>
+
+<!-- Body -->
+<div class="side-sheet-content">
+    <form id="edit-ticket-form"
+          hx-post="{% url 'support:edit' ticket_id=ticket.id %}"
+          hx-target="#datatable-body"
+          hx-swap="innerHTML"
+          @htmx:after-request="closePanel()"
+          class="flex flex-col gap-4 p-6">
+        {% csrf_token %}
+
+        <!-- Subject -->
+        <div>
+            <label class="text-sm font-medium mb-1 block">{% trans "Subject" %} *</label>
+            <input type="text" name="subject" class="input input-sm w-full"
+                   value="{{ ticket.subject }}"
+                   placeholder="{% trans 'Brief description of the issue' %}" required>
+        </div>
+
+        <!-- Customer -->
+        <div>
+            <label class="text-sm font-medium mb-1 block">{% trans "Customer" %}</label>
+            <select name="customer" class="select select-sm w-full">
+                <option value="">{% trans "Select customer (optional)" %}</option>
+                {% for customer in customers %}
+                <option value="{{ customer.id }}" {% if ticket.customer_id == customer.id %}selected{% endif %}>
+                    {{ customer.name }}{% if customer.email %} ({{ customer.email }}){% endif %}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Category -->
+        <div>
+            <label class="text-sm font-medium mb-1 block">{% trans "Category" %}</label>
+            <select name="category" class="select select-sm w-full">
+                <option value="">{% trans "Select category (optional)" %}</option>
+                {% for cat in categories %}
+                <option value="{{ cat.id }}" {% if ticket.category_id == cat.id %}selected{% endif %}>
+                    {{ cat.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Priority -->
+        <div>
+            <label class="text-sm font-medium mb-1 block">{% trans "Priority" %}</label>
+            <select name="priority" class="select select-sm w-full">
+                <option value="low" {% if ticket.priority == 'low' %}selected{% endif %}>{% trans "Low" %}</option>
+                <option value="medium" {% if ticket.priority == 'medium' %}selected{% endif %}>{% trans "Medium" %}</option>
+                <option value="high" {% if ticket.priority == 'high' %}selected{% endif %}>{% trans "High" %}</option>
+                <option value="urgent" {% if ticket.priority == 'urgent' %}selected{% endif %}>{% trans "Urgent" %}</option>
+            </select>
+        </div>
+
+        <!-- Status -->
+        <div>
+            <label class="text-sm font-medium mb-1 block">{% trans "Status" %}</label>
+            <select name="status" class="select select-sm w-full">
+                <option value="open" {% if ticket.status == 'open' %}selected{% endif %}>{% trans "Open" %}</option>
+                <option value="in_progress" {% if ticket.status == 'in_progress' %}selected{% endif %}>{% trans "In Progress" %}</option>
+                <option value="waiting_customer" {% if ticket.status == 'waiting_customer' %}selected{% endif %}>{% trans "Waiting on Customer" %}</option>
+                <option value="resolved" {% if ticket.status == 'resolved' %}selected{% endif %}>{% trans "Resolved" %}</option>
+                <option value="closed" {% if ticket.status == 'closed' %}selected{% endif %}>{% trans "Closed" %}</option>
+            </select>
+        </div>
+
+        <!-- Description -->
+        <div>
+            <label class="text-sm font-medium mb-1 block">{% trans "Description" %}</label>
+            <textarea name="description" class="textarea textarea-sm w-full" rows="4"
+                      placeholder="{% trans 'Detailed description of the issue...' %}">{{ ticket.description }}</textarea>
+        </div>
+    </form>
+</div>
+
+<!-- Footer -->
+<div class="side-sheet-footer">
+    <div class="flex justify-end gap-2">
+        <button type="button" class="btn btn-ghost btn-sm" @click="closePanel()">
+            {% trans "Cancel" %}
+        </button>
+        <button type="submit" form="edit-ticket-form" class="btn btn-sm color-primary">
+            {% icon "save-outline" %}
+            {% trans "Save Changes" %}
+        </button>
+    </div>
+</div>

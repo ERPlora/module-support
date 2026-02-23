@@ -1,0 +1,106 @@
+{% load djicons i18n %}
+
+{% if categories %}
+
+<div class="datatable-body">
+    <table class="datatable-table">
+        <thead class="datatable-thead">
+            <tr>
+                <th class="datatable-th datatable-th-sortable{% if sort_field == 'name' %} datatable-th-sorted{% if sort_dir == 'desc' %} datatable-th-sorted-desc{% endif %}{% endif %}"
+                    hx-get="{% url 'support:categories' %}?sort=name&dir={% if sort_field == 'name' and sort_dir == 'asc' %}desc{% else %}asc{% endif %}"
+                    hx-target="#datatable-body"
+                    hx-include="#categories-datatable"
+                    style="cursor: pointer;">
+                    {% trans "Name" %}
+                    <span class="datatable-sort-icon">{% icon "chevron-up-outline" %}</span>
+                </th>
+                <th class="datatable-th">{% trans "Color" %}</th>
+                <th class="datatable-th">{% trans "Icon" %}</th>
+                <th class="datatable-th datatable-th-center">{% trans "Tickets" %}</th>
+                <th class="datatable-th datatable-th-center">{% trans "Status" %}</th>
+                <th class="datatable-th datatable-th-center">{% trans "Order" %}</th>
+                <th class="datatable-th datatable-th-actions">{% trans "Actions" %}</th>
+            </tr>
+        </thead>
+        <tbody class="datatable-tbody">
+            {% for category in categories %}
+            <tr class="datatable-tr">
+                <td class="datatable-td" data-label="{% trans 'Name' %}">
+                    <div class="flex items-center gap-2 cursor-pointer"
+                         @click="openPanel('{% url 'support:category_edit' category_id=category.id %}')">
+                        {% icon category.icon css_class="text-xl" %}
+                        <span class="font-medium">{{ category.name }}</span>
+                    </div>
+                </td>
+                <td class="datatable-td" data-label="{% trans 'Color' %}">
+                    <span class="badge badge-sm color-{{ category.color }}">{{ category.get_color_display }}</span>
+                </td>
+                <td class="datatable-td" data-label="{% trans 'Icon' %}">
+                    <span class="text-base-content/60 text-sm">{{ category.icon }}</span>
+                </td>
+                <td class="datatable-td datatable-td-center" data-label="{% trans 'Tickets' %}">
+                    <span class="badge">{{ category.ticket_count_val }}</span>
+                </td>
+                <td class="datatable-td datatable-td-center" data-label="{% trans 'Status' %}">
+                    {% if category.is_active %}
+                    <span class="badge badge-sm color-success">{% trans "Active" %}</span>
+                    {% else %}
+                    <span class="badge badge-sm">{% trans "Inactive" %}</span>
+                    {% endif %}
+                </td>
+                <td class="datatable-td datatable-td-center" data-label="{% trans 'Order' %}">
+                    <span class="text-base-content/60">{{ category.sort_order }}</span>
+                </td>
+                <td class="datatable-td datatable-td-actions" onclick="event.stopPropagation();">
+                    <div class="datatable-row-actions">
+                        <button class="datatable-row-action"
+                                @click="openPanel('{% url 'support:category_edit' category_id=category.id %}')"
+                                title="{% trans 'Edit' %}">
+                            {% icon "create-outline" %}
+                        </button>
+                        <button class="datatable-row-action datatable-row-action-danger"
+                                @click="deleteTarget = { id: '{{ category.id }}', name: '{{ category.name|escapejs }}', url: '{% url 'support:category_delete' category.id %}' }; deleteConfirm = true"
+                                title="{% trans 'Delete' %}">
+                            {% icon "trash-outline" %}
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% else %}
+<!-- Empty State -->
+<div class="datatable-empty">
+    <div class="datatable-empty-icon">
+        {% if search_query %}
+        {% icon "search-outline" %}
+        {% else %}
+        {% icon "pricetags-outline" %}
+        {% endif %}
+    </div>
+    <div class="datatable-empty-title">
+        {% if search_query %}
+        {% trans "No categories found" %}
+        {% else %}
+        {% trans "No categories yet" %}
+        {% endif %}
+    </div>
+    <div class="datatable-empty-text">
+        {% if search_query %}
+        {% trans "Try a different search term" %}
+        {% else %}
+        {% trans "Create categories to organize your support tickets" %}
+        {% endif %}
+    </div>
+    {% if not search_query %}
+    <button class="btn color-primary mt-4"
+            @click="openPanel('{% url 'support:category_add' %}')">
+        {% icon "add-outline" %}
+        {% trans "Add First Category" %}
+    </button>
+    {% endif %}
+</div>
+{% endif %}

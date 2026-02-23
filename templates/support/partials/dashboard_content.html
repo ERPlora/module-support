@@ -1,0 +1,171 @@
+{% load djicons i18n %}
+
+<div class="p-4">
+    <!-- Stat Cards Row 1 -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <div class="card">
+            <div class="card-body p-6">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+                        {% icon "ticket-outline" css_class="text-2xl text-primary" %}
+                    </div>
+                    <div>
+                        <div class="text-sm text-base-content/60">{% trans "Open Tickets" %}</div>
+                        <div class="text-2xl font-semibold">{{ open_count }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body p-6">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 {% if sla_breached_count > 0 %}bg-error/10{% else %}bg-warning/10{% endif %} rounded-xl flex items-center justify-center">
+                        {% icon "time-outline" css_class="text-2xl {% if sla_breached_count > 0 %}text-error{% else %}text-warning{% endif %}" %}
+                    </div>
+                    <div>
+                        <div class="text-sm text-base-content/60">{% trans "Awaiting Response" %}</div>
+                        <div class="text-2xl font-semibold">{{ awaiting_response }}</div>
+                        {% if sla_breached_count > 0 %}
+                        <div class="text-xs text-error font-medium">
+                            {{ sla_breached_count }} {% trans "SLA breached" %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body p-6">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-success/10 rounded-xl flex items-center justify-center">
+                        {% icon "checkmark-circle-outline" css_class="text-2xl text-success" %}
+                    </div>
+                    <div>
+                        <div class="text-sm text-base-content/60">{% trans "Resolved This Week" %}</div>
+                        <div class="text-2xl font-semibold text-success">{{ resolved_this_week }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stat Cards Row 2 -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="card">
+            <div class="card-body p-6">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-neutral/10 rounded-xl flex items-center justify-center">
+                        {% icon "hourglass-outline" css_class="text-2xl text-base-content/60" %}
+                    </div>
+                    <div>
+                        <div class="text-sm text-base-content/60">{% trans "Avg. Resolution Time" %}</div>
+                        <div class="text-2xl font-semibold">
+                            {% if avg_resolution %}{{ avg_resolution }}h{% else %}-{% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body p-6">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 {% if sla_compliance >= 90 %}bg-success/10{% elif sla_compliance >= 70 %}bg-warning/10{% else %}bg-error/10{% endif %} rounded-xl flex items-center justify-center">
+                        {% icon "shield-checkmark-outline" css_class="text-2xl {% if sla_compliance >= 90 %}text-success{% elif sla_compliance >= 70 %}text-warning{% else %}text-error{% endif %}" %}
+                    </div>
+                    <div>
+                        <div class="text-sm text-base-content/60">{% trans "SLA Compliance" %}</div>
+                        <div class="text-2xl font-semibold {% if sla_compliance >= 90 %}text-success{% elif sla_compliance >= 70 %}text-warning{% else %}text-error{% endif %}">
+                            {{ sla_compliance }}%
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body p-6">
+                <div class="text-sm text-base-content/60 mb-3">{% trans "By Priority" %}</div>
+                <div class="flex items-center gap-3 flex-wrap">
+                    {% if priority_urgent %}
+                    <span class="badge color-error">{% trans "Urgent" %}: {{ priority_urgent }}</span>
+                    {% endif %}
+                    {% if priority_high %}
+                    <span class="badge color-warning">{% trans "High" %}: {{ priority_high }}</span>
+                    {% endif %}
+                    {% if priority_medium %}
+                    <span class="badge color-primary">{% trans "Medium" %}: {{ priority_medium }}</span>
+                    {% endif %}
+                    {% if priority_low %}
+                    <span class="badge">{% trans "Low" %}: {{ priority_low }}</span>
+                    {% endif %}
+                    {% if not priority_urgent and not priority_high and not priority_medium and not priority_low %}
+                    <span class="text-sm text-base-content/40">{% trans "No open tickets" %}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Tickets -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">{% icon "ticket-outline" css_class="text-primary" %} {% trans "Recent Tickets" %}</h3>
+            <a hx-get="{% url 'support:list' %}"
+               hx-target="#main-content-area"
+               hx-push-url="true"
+               class="btn btn-ghost btn-sm">
+                {% trans "View All" %}
+                {% icon "arrow-forward-outline" %}
+            </a>
+        </div>
+        <div class="card-body p-0">
+            {% if recent_tickets %}
+            <div class="list">
+                {% for ticket in recent_tickets %}
+                <a hx-get="{% url 'support:detail' ticket_id=ticket.id %}"
+                   hx-target="#main-content-area"
+                   hx-push-url="true"
+                   class="list-item list-item-clickable">
+                    <div class="list-item-start">
+                        <div class="w-10 h-10 bg-{% if ticket.priority == 'urgent' %}error{% elif ticket.priority == 'high' %}warning{% elif ticket.priority == 'medium' %}primary{% else %}neutral{% endif %}/10 rounded-lg flex items-center justify-center">
+                            {% icon "ticket-outline" css_class="text-xl text-{% if ticket.priority == 'urgent' %}error{% elif ticket.priority == 'high' %}warning{% elif ticket.priority == 'medium' %}primary{% else %}base-content/60{% endif %}" %}
+                        </div>
+                    </div>
+                    <div class="list-item-content">
+                        <div class="list-item-label">
+                            <span class="text-base-content/50 mr-1">{{ ticket.ticket_number }}</span>
+                            {{ ticket.subject }}
+                        </div>
+                        <div class="list-item-note">
+                            {% if ticket.customer %}{{ ticket.customer.name }} &middot; {% endif %}
+                            {{ ticket.created_at|timesince }} {% trans "ago" %}
+                        </div>
+                    </div>
+                    <div class="list-item-end">
+                        <div class="flex items-center gap-2">
+                            <span class="badge badge-sm color-{% if ticket.status == 'open' %}primary{% elif ticket.status == 'in_progress' %}warning{% elif ticket.status == 'waiting_customer' %}neutral{% elif ticket.status == 'resolved' %}success{% else %}base{% endif %}">
+                                {{ ticket.get_status_display }}
+                            </span>
+                            {% if ticket.is_sla_breached_response %}
+                            <span class="badge badge-sm color-error">{% trans "SLA" %}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-12 text-base-content/40">
+                {% icon "ticket-outline" css_class="text-5xl block mx-auto mb-2" %}
+                <p class="mt-2">{% trans "No tickets yet" %}</p>
+                <a hx-get="{% url 'support:list' %}"
+                   hx-target="#main-content-area"
+                   hx-push-url="true"
+                   class="btn color-primary btn-sm mt-4">
+                    {% icon "add-outline" %}
+                    {% trans "Create First Ticket" %}
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

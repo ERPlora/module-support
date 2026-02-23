@@ -1,0 +1,83 @@
+{% load djicons i18n %}
+
+<!-- Header -->
+<div class="side-sheet-header">
+    <h3 class="sheet-title">{% trans "Add Category" %}</h3>
+    <button class="sheet-close" @click="closePanel()">
+        {% icon "close-outline" %}
+    </button>
+</div>
+
+<!-- Body -->
+<div class="side-sheet-content">
+    <form id="add-category-form"
+          hx-post="{% url 'support:category_add' %}"
+          hx-target="#datatable-body"
+          hx-swap="innerHTML"
+          @htmx:after-request="closePanel()"
+          class="flex flex-col gap-4 p-6">
+        {% csrf_token %}
+
+        <!-- Name -->
+        <div>
+            <label class="text-sm font-medium mb-1 block">{% trans "Name" %} *</label>
+            <input type="text" name="name" class="input input-sm w-full"
+                   placeholder="{% trans 'Category name' %}" required>
+        </div>
+
+        <!-- Description -->
+        <div>
+            <label class="text-sm font-medium mb-1 block">{% trans "Description" %}</label>
+            <textarea name="description" class="textarea textarea-sm w-full" rows="2"
+                      placeholder="{% trans 'Category description...' %}"></textarea>
+        </div>
+
+        <!-- Color -->
+        <div>
+            <label class="text-sm font-medium mb-1 block">{% trans "Color" %}</label>
+            <select name="color" class="select select-sm w-full">
+                <option value="primary">{% trans "Blue" %}</option>
+                <option value="success">{% trans "Green" %}</option>
+                <option value="warning">{% trans "Orange" %}</option>
+                <option value="error">{% trans "Red" %}</option>
+                <option value="neutral">{% trans "Gray" %}</option>
+            </select>
+        </div>
+
+        <!-- Icon -->
+        <div>
+            <label class="text-sm font-medium mb-1 block">{% trans "Icon" %}</label>
+            <select name="icon" class="select select-sm w-full">
+                <option value="help-circle-outline">{% trans "General" %}</option>
+                <option value="bug-outline">{% trans "Bug" %}</option>
+                <option value="construct-outline">{% trans "Product Issue" %}</option>
+                <option value="cut-outline">{% trans "Service Issue" %}</option>
+                <option value="card-outline">{% trans "Billing" %}</option>
+                <option value="shield-checkmark-outline">{% trans "Warranty" %}</option>
+                <option value="alert-circle-outline">{% trans "Complaint" %}</option>
+                <option value="bulb-outline">{% trans "Suggestion" %}</option>
+                <option value="chatbox-outline">{% trans "Feedback" %}</option>
+            </select>
+        </div>
+
+        <!-- Sort Order -->
+        <div>
+            <label class="text-sm font-medium mb-1 block">{% trans "Sort Order" %}</label>
+            <input type="number" name="sort_order" class="input input-sm w-full"
+                   min="0" value="0" placeholder="0">
+        </div>
+    </form>
+</div>
+
+<!-- Footer -->
+<div class="side-sheet-footer">
+    <div class="flex justify-end gap-2">
+        <button type="button" class="btn btn-ghost btn-sm" @click="closePanel()">
+            {% trans "Cancel" %}
+        </button>
+        <button type="submit" form="add-category-form" class="btn btn-sm color-primary">
+            {% icon "add-outline" %}
+            {% trans "Add Category" %}
+        </button>
+    </div>
+</div>

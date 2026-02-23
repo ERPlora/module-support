@@ -1,0 +1,81 @@
+{% load djicons i18n %}
+
+<!-- Header -->
+<div class="side-sheet-header">
+    <h3 class="sheet-title">{% trans "New Ticket" %}</h3>
+    <button class="sheet-close" @click="closePanel()">
+        {% icon "close-outline" %}
+    </button>
+</div>
+
+<!-- Body -->
+<div class="side-sheet-content">
+    <form id="add-ticket-form"
+          hx-post="{% url 'support:add' %}"
+          hx-target="#datatable-body"
+          hx-swap="innerHTML"
+          @htmx:after-request="closePanel()"
+          class="flex flex-col gap-4 p-6">
+        {% csrf_token %}
+
+        <!-- Subject -->
+        <div>
+            <label class="text-sm font-medium mb-1 block">{% trans "Subject" %} *</label>
+            <input type="text" name="subject" class="input input-sm w-full"
+                   placeholder="{% trans 'Brief description of the issue' %}" required>
+        </div>
+
+        <!-- Customer -->
+        <div>
+            <label class="text-sm font-medium mb-1 block">{% trans "Customer" %}</label>
+            <select name="customer" class="select select-sm w-full">
+                <option value="">{% trans "Select customer (optional)" %}</option>
+                {% for customer in customers %}
+                <option value="{{ customer.id }}">{{ customer.name }}{% if customer.email %} ({{ customer.email }}){% endif %}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Category -->
+        <div>
+            <label class="text-sm font-medium mb-1 block">{% trans "Category" %}</label>
+            <select name="category" class="select select-sm w-full">
+                <option value="">{% trans "Select category (optional)" %}</option>
+                {% for cat in categories %}
+                <option value="{{ cat.id }}">{{ cat.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Priority -->
+        <div>
+            <label class="text-sm font-medium mb-1 block">{% trans "Priority" %}</label>
+            <select name="priority" class="select select-sm w-full">
+                <option value="low" {% if settings.default_priority == 'low' %}selected{% endif %}>{% trans "Low" %}</option>
+                <option value="medium" {% if settings.default_priority == 'medium' %}selected{% endif %}>{% trans "Medium" %}</option>
+                <option value="high" {% if settings.default_priority == 'high' %}selected{% endif %}>{% trans "High" %}</option>
+                <option value="urgent" {% if settings.default_priority == 'urgent' %}selected{% endif %}>{% trans "Urgent" %}</option>
+            </select>
+        </div>
+
+        <!-- Description -->
+        <div>
+            <label class="text-sm font-medium mb-1 block">{% trans "Description" %}</label>
+            <textarea name="description" class="textarea textarea-sm w-full" rows="4"
+                      placeholder="{% trans 'Detailed description of the issue...' %}"></textarea>
+        </div>
+    </form>
+</div>
+
+<!-- Footer -->
+<div class="side-sheet-footer">
+    <div class="flex justify-end gap-2">
+        <button type="button" class="btn btn-ghost btn-sm" @click="closePanel()">
+            {% trans "Cancel" %}
+        </button>
+        <button type="submit" form="add-ticket-form" class="btn btn-sm color-primary">
+            {% icon "add-outline" %}
+            {% trans "Create Ticket" %}
+        </button>
+    </div>
+</div>

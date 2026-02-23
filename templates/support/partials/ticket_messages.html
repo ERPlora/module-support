@@ -1,0 +1,71 @@
+{% load djicons i18n %}
+
+<div class="flex flex-col">
+    {% if ticket_messages %}
+    <div class="flex flex-col gap-0">
+        {% for msg in ticket_messages %}
+        <div class="p-4 {% if msg.is_internal %}bg-warning/5 border-l-4 border-warning{% else %}border-b border-base-200{% endif %}">
+            <div class="flex items-start gap-3">
+                <div class="avatar avatar-sm {% if msg.is_internal %}avatar-warning{% else %}avatar-primary{% endif %}">
+                    <span>{{ msg.author_name|make_list|first|upper }}</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="font-medium text-sm">{{ msg.author_name }}</span>
+                        {% if msg.is_internal %}
+                        <span class="badge badge-sm color-warning">{% trans "Internal Note" %}</span>
+                        {% endif %}
+                        <span class="text-xs text-base-content/40 ml-auto">{{ msg.created_at|date:"d/m/Y H:i" }}</span>
+                    </div>
+                    <div class="text-sm" style="white-space: pre-wrap;">{{ msg.message }}</div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-8 text-base-content/40">
+        <p class="text-sm">{% trans "No messages yet" %}</p>
+    </div>
+    {% endif %}
+
+    <!-- Reply Form -->
+    {% if ticket.status != 'closed' %}
+    <div class="p-4 border-t border-base-200 bg-base-100">
+        <form hx-post="{% url 'support:add_message' ticket_id=ticket.id %}"
+              hx-target="#ticket-messages"
+              hx-swap="innerHTML"
+              class="flex flex-col gap-3"
+              x-data="{ message: '' }">
+            {% csrf_token %}
+            <textarea name="message"
+                      class="textarea textarea-sm w-full"
+                      rows="3"
+                      placeholder="{% trans 'Type your reply...' %}"
+                      x-model="message"
+                      required></textarea>
+            <div class="flex items-center justify-between">
+                <label class="flex items-center gap-2">
+                    <input type="checkbox" name="is_internal" class="toggle toggle-sm color-warning">
+                    <span class="text-sm text-base-content/60">{% trans "Internal note (staff only)" %}</span>
+                </label>
+                <button type="submit"
+                        class="btn btn-sm color-primary"
+                        :disabled="!message.trim()">
+                    {% icon "send-outline" %}
+                    {% trans "Reply" %}
+                </button>
+            </div>
+        </form>
+    </div>
+    {% else %}
+    <div class="p-4 border-t border-base-200">
+        <div class="callout callout-info">
+            <div class="callout-icon">{% icon "information-circle-outline" %}</div>
+            <div class="callout-content">
+                <div class="callout-text">{% trans "This ticket is closed. Reopen it to add new messages." %}</div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>

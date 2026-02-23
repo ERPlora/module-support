@@ -1,0 +1,65 @@
+/*
+ * Support Module Styles
+ *
+ * Module-specific styles that complement the ux CSS library.
+ * Most styling is handled by ux classes (card, badge, list, datatable, etc.)
+ * This file contains only support-module-specific overrides.
+ */
+
+/* Message thread internal note styling */
+.support-internal-note {
+    background-color: color-mix(in srgb, var(--color-warning) 5%, transparent);
+    border-left: 4px solid var(--color-warning);
+}
+
+/* SLA status indicators */
+.support-sla-ok {
+    color: var(--color-success);
+}
+
+.support-sla-warning {
+    color: var(--color-warning);
+}
+
+.support-sla-breached {
+    color: var(--color-error);
+    font-weight: 600;
+}
+
+/* Priority indicator dots (optional, for compact views) */
+.support-priority-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.support-priority-dot-low {
+    background-color: var(--color-base-300);
+}
+
+.support-priority-dot-medium {
+    background-color: var(--color-primary);
+}
+
+.support-priority-dot-high {
+    background-color: var(--color-warning);
+}
+
+.support-priority-dot-urgent {
+    background-color: var(--color-error);
+    animation: support-pulse 2s infinite;
+}
+
+@keyframes support-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Ticket number monospace styling */
+.support-ticket-number {
+    font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.875rem;
+    color: var(--color-base-content);
+    opacity: 0.6;
+}

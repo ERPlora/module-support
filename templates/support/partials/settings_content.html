@@ -1,0 +1,264 @@
+{% load djicons i18n %}
+
+<div class="p-4">
+    <!-- Overview Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="card">
+            <div class="card-body p-6">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+                        {% icon "ticket-outline" css_class="text-2xl text-primary" %}
+                    </div>
+                    <div>
+                        <div class="text-sm text-base-content/60">{% trans "Total Tickets" %}</div>
+                        <div class="text-2xl font-semibold">{{ total_tickets }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body p-6">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-warning/10 rounded-xl flex items-center justify-center">
+                        {% icon "alert-circle-outline" css_class="text-2xl text-warning" %}
+                    </div>
+                    <div>
+                        <div class="text-sm text-base-content/60">{% trans "Open Tickets" %}</div>
+                        <div class="text-2xl font-semibold text-warning">{{ open_tickets }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body p-6">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-success/10 rounded-xl flex items-center justify-center">
+                        {% icon "pricetags-outline" css_class="text-2xl text-success" %}
+                    </div>
+                    <div>
+                        <div class="text-sm text-base-content/60">{% trans "Categories" %}</div>
+                        <div class="text-2xl font-semibold">{{ total_categories }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Form -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3 class="card-title">{% icon "settings-outline" css_class="text-primary" %} {% trans "Support Settings" %}</h3>
+        </div>
+        <div class="card-body p-0">
+            <form hx-post="{% url 'support:settings' %}"
+                  hx-target="#main-content-area"
+                  hx-swap="innerHTML">
+                {% csrf_token %}
+
+                <div class="list">
+                    <!-- SLA First Response -->
+                    <div class="list-item">
+                        <div class="list-item-start">
+                            {% icon "timer-outline" css_class="text-xl text-primary" %}
+                        </div>
+                        <div class="list-item-content">
+                            <div class="list-item-label">{% trans "SLA First Response" %}</div>
+                            <div class="list-item-note">{% trans "Maximum hours for initial response to a ticket" %}</div>
+                        </div>
+                        <div class="list-item-end">
+                            <input type="number" name="sla_first_response_hours"
+                                   class="input input-sm" style="width: 80px;"
+                                   min="1" value="{{ settings.sla_first_response_hours }}"
+                                   placeholder="24">
+                            <span class="text-sm text-base-content/60 ml-1">{% trans "hours" %}</span>
+                        </div>
+                    </div>
+
+                    <!-- SLA Resolution -->
+                    <div class="list-item">
+                        <div class="list-item-start">
+                            {% icon "hourglass-outline" css_class="text-xl text-primary" %}
+                        </div>
+                        <div class="list-item-content">
+                            <div class="list-item-label">{% trans "SLA Resolution" %}</div>
+                            <div class="list-item-note">{% trans "Maximum hours for ticket resolution" %}</div>
+                        </div>
+                        <div class="list-item-end">
+                            <input type="number" name="sla_resolution_hours"
+                                   class="input input-sm" style="width: 80px;"
+                                   min="1" value="{{ settings.sla_resolution_hours }}"
+                                   placeholder="72">
+                            <span class="text-sm text-base-content/60 ml-1">{% trans "hours" %}</span>
+                        </div>
+                    </div>
+
+                    <!-- Default Priority -->
+                    <div class="list-item">
+                        <div class="list-item-start">
+                            {% icon "flag-outline" css_class="text-xl text-warning" %}
+                        </div>
+                        <div class="list-item-content">
+                            <div class="list-item-label">{% trans "Default Priority" %}</div>
+                            <div class="list-item-note">{% trans "Default priority for new tickets" %}</div>
+                        </div>
+                        <div class="list-item-end">
+                            <select name="default_priority" class="select select-sm" style="width: 130px;">
+                                <option value="low" {% if settings.default_priority == 'low' %}selected{% endif %}>{% trans "Low" %}</option>
+                                <option value="medium" {% if settings.default_priority == 'medium' %}selected{% endif %}>{% trans "Medium" %}</option>
+                                <option value="high" {% if settings.default_priority == 'high' %}selected{% endif %}>{% trans "High" %}</option>
+                                <option value="urgent" {% if settings.default_priority == 'urgent' %}selected{% endif %}>{% trans "Urgent" %}</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Auto Assign -->
+                    <div class="list-item">
+                        <div class="list-item-start">
+                            {% icon "person-outline" css_class="text-xl text-success" %}
+                        </div>
+                        <div class="list-item-content">
+                            <div class="list-item-label">{% trans "Auto-assign Tickets" %}</div>
+                            <div class="list-item-note">{% trans "Automatically assign new tickets to available staff" %}</div>
+                        </div>
+                        <div class="list-item-end">
+                            <label class="toggle toggle-sm color-success">
+                                <input type="checkbox" name="auto_assign"
+                                       {% if settings.auto_assign %}checked{% endif %}>
+                                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Customer Notifications -->
+                    <div class="list-item">
+                        <div class="list-item-start">
+                            {% icon "notifications-outline" css_class="text-xl text-primary" %}
+                        </div>
+                        <div class="list-item-content">
+                            <div class="list-item-label">{% trans "Customer Notifications" %}</div>
+                            <div class="list-item-note">{% trans "Send email notifications to customers on ticket updates" %}</div>
+                        </div>
+                        <div class="list-item-end">
+                            <label class="toggle toggle-sm color-primary">
+                                <input type="checkbox" name="enable_customer_notifications"
+                                       {% if settings.enable_customer_notifications %}checked{% endif %}>
+                                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Auto Close Resolved -->
+                    <div class="list-item">
+                        <div class="list-item-start">
+                            {% icon "close-circle-outline" css_class="text-xl text-error" %}
+                        </div>
+                        <div class="list-item-content">
+                            <div class="list-item-label">{% trans "Auto-close Resolved Tickets" %}</div>
+                            <div class="list-item-note">{% trans "Automatically close resolved tickets after a number of days" %}</div>
+                        </div>
+                        <div class="list-item-end">
+                            <input type="number" name="close_resolved_after_days"
+                                   class="input input-sm" style="width: 80px;"
+                                   min="1" value="{{ settings.close_resolved_after_days }}"
+                                   placeholder="7">
+                            <span class="text-sm text-base-content/60 ml-1">{% trans "days" %}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Save Button -->
+                <div class="p-4 border-t border-base-200">
+                    <div class="flex justify-end">
+                        <button type="submit" class="btn color-primary btn-sm">
+                            {% icon "save-outline" %}
+                            {% trans "Save Settings" %}
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3 class="card-title">{% icon "flash-outline" css_class="text-primary" %} {% trans "Quick Actions" %}</h3>
+        </div>
+        <div class="card-body p-0">
+            <div class="list">
+                <a hx-get="{% url 'support:list' %}"
+                   hx-target="#main-content-area"
+                   hx-push-url="true"
+                   class="list-item list-item-clickable">
+                    <div class="list-item-start">
+                        {% icon "ticket-outline" css_class="text-xl text-primary" %}
+                    </div>
+                    <div class="list-item-content">
+                        <div class="list-item-label">{% trans "View All Tickets" %}</div>
+                        <div class="list-item-note">{% trans "Browse and manage support tickets" %}</div>
+                    </div>
+                    <div class="list-item-end">
+                        <span class="list-item-chevron"></span>
+                    </div>
+                </a>
+                <a hx-get="{% url 'support:categories' %}"
+                   hx-target="#main-content-area"
+                   hx-push-url="true"
+                   class="list-item list-item-clickable">
+                    <div class="list-item-start">
+                        {% icon "pricetags-outline" css_class="text-xl text-warning" %}
+                    </div>
+                    <div class="list-item-content">
+                        <div class="list-item-label">{% trans "Manage Categories" %}</div>
+                        <div class="list-item-note">{% trans "Create and edit ticket categories" %}</div>
+                    </div>
+                    <div class="list-item-end">
+                        <span class="list-item-chevron"></span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Management -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3 class="card-title">{% icon "server-outline" css_class="text-warning" %} {% trans "Data Management" %}</h3>
+        </div>
+        <div class="card-body p-0">
+            <div class="list">
+                <div class="list-item">
+                    <div class="list-item-content">
+                        <div class="list-item-label">{% trans "Ticket Records" %}</div>
+                        <div class="list-item-note">{% trans "Total tickets in the database" %}</div>
+                    </div>
+                    <div class="list-item-end">
+                        <span class="badge color-primary">{{ total_tickets }}</span>
+                    </div>
+                </div>
+                <div class="list-item">
+                    <div class="list-item-content">
+                        <div class="list-item-label">{% trans "Open Rate" %}</div>
+                        <div class="list-item-note">{% trans "Percentage of tickets currently open" %}</div>
+                    </div>
+                    <div class="list-item-end">
+                        {% if total_tickets %}
+                        <span class="badge color-warning">{% widthratio open_tickets total_tickets 100 %}%</span>
+                        {% else %}
+                        <span class="badge">0%</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="list-item">
+                    <div class="list-item-content">
+                        <div class="list-item-label">{% trans "Categories Configured" %}</div>
+                        <div class="list-item-note">{% trans "Ticket organization categories" %}</div>
+                    </div>
+                    <div class="list-item-end">
+                        <span class="badge color-success">{{ total_categories }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,103 @@
+{% load djicons i18n %}
+
+<div x-data="{
+    panelOpen: false,
+    editUrl: '',
+    deleteConfirm: false,
+    deleteTarget: null,
+    openPanel(url) {
+        this.editUrl = url;
+        htmx.ajax('GET', url, { target: '#category-panel-content', swap: 'innerHTML' });
+        this.panelOpen = true;
+    },
+    closePanel() {
+        this.panelOpen = false;
+    },
+    confirmDelete() {
+        if (this.deleteTarget) {
+            htmx.ajax('POST', this.deleteTarget.url, {
+                target: '#datatable-body',
+                swap: 'innerHTML',
+                headers: { 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || '{{ csrf_token }}' }
+            });
+        }
+        this.deleteConfirm = false;
+        this.deleteTarget = null;
+    }
+}">
+
+    <div class="datatable glass mt-5" id="categories-datatable">
+
+        <!-- Toolbar -->
+        <div class="datatable-toolbar">
+            <div class="datatable-toolbar-start">
+                <label class="input input-sm datatable-search">
+                    {% icon "search-outline" %}
+                    <input type="search"
+                           name="q"
+                           placeholder="{% trans 'Search categories...' %}"
+                           value="{{ search_query|default:'' }}"
+                           autocomplete="off"
+                           hx-get="{% url 'support:categories' %}"
+                           hx-target="#datatable-body"
+                           hx-include="#categories-datatable"
+                           hx-trigger="input changed delay:300ms, search">
+                </label>
+            </div>
+            <div class="datatable-toolbar-end">
+                <!-- Add Category -->
+                <button class="btn btn-sm btn-circle color-primary"
+                        @click="openPanel('{% url 'support:category_add' %}')"
+                        title="{% trans 'Add Category' %}">
+                    {% icon "add-outline" %}
+                </button>
+            </div>
+        </div>
+
+        {% csrf_token %}
+
+        <!-- Hidden state inputs -->
+        <input type="hidden" name="sort" value="{{ sort_field|default:'name' }}">
+        <input type="hidden" name="dir" value="{{ sort_dir|default:'asc' }}">
+
+        <!-- Datatable Body (HTMX swap target) -->
+        <div id="datatable-body">
+            {% include "support/partials/categories_list.html" %}
+        </div>
+    </div>
+
+    <!-- Side Sheet -->
+    <div class="sheet-backdrop" :class="{ 'is-open': panelOpen }" @click.self="closePanel()">
+        <div class="side-sheet side-sheet-right" id="category-panel-content">
+            <!-- Content loaded via HTMX -->
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-backdrop" :data-state="deleteConfirm ? 'open' : 'closed'" @click.self="deleteConfirm = false; deleteTarget = null">
+        <div class="modal modal-sm">
+            <div class="modal-header">
+                <h3 class="modal-title">{% trans "Delete Category" %}</h3>
+                <button class="modal-close" @click="deleteConfirm = false; deleteTarget = null">
+                    {% icon "close-outline" %}
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="text-sm text-base-content/70">
+                    {% trans "Are you sure you want to delete" %} <strong x-text="deleteTarget?.name"></strong>?
+                    {% trans "Tickets in this category will not be deleted." %}
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost btn-sm" @click="deleteConfirm = false; deleteTarget = null">
+                    {% trans "Cancel" %}
+                </button>
+                <button class="btn btn-sm color-error" @click="confirmDelete()">
+                    {% icon "trash-outline" %}
+                    {% trans "Delete" %}
+                </button>
+            </div>
+        </div>
+    </div>
+
+</div>
