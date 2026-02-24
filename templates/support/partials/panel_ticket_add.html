@@ -1,81 +1,96 @@
 {% load djicons i18n %}
 
-<!-- Header -->
 <div class="side-sheet-header">
-    <h3 class="sheet-title">{% trans "New Ticket" %}</h3>
-    <button class="sheet-close" @click="closePanel()">
-        {% icon "close-outline" %}
-    </button>
+    <h3 class="sheet-title">{% trans "Add Ticket" %}</h3>
+    <button class="sheet-close" @click="closePanel()">{% icon "close-outline" %}</button>
 </div>
 
-<!-- Body -->
 <div class="side-sheet-content">
     <form id="add-ticket-form"
-          hx-post="{% url 'support:add' %}"
+          hx-post="{% url 'support:ticket_add' %}"
           hx-target="#datatable-body"
           hx-swap="innerHTML"
           @htmx:after-request="closePanel()"
           class="flex flex-col gap-4 p-6">
         {% csrf_token %}
 
-        <!-- Subject -->
+        {% if error %}
+        <div class="callout callout-error">
+            <div class="callout-content"><span class="callout-text">{{ error }}</span></div>
+        </div>
+        {% endif %}
+
         <div>
-            <label class="text-sm font-medium mb-1 block">{% trans "Subject" %} *</label>
-            <input type="text" name="subject" class="input input-sm w-full"
-                   placeholder="{% trans 'Brief description of the issue' %}" required>
+            <label class="text-sm font-medium mb-1 block">{% trans "Ticket Number" %}</label>
+            <input type="text" name="ticket_number" class="input input-sm w-full" placeholder="{% trans 'Ticket Number' %}">
         </div>
 
-        <!-- Customer -->
         <div>
-            <label class="text-sm font-medium mb-1 block">{% trans "Customer" %}</label>
-            <select name="customer" class="select select-sm w-full">
-                <option value="">{% trans "Select customer (optional)" %}</option>
-                {% for customer in customers %}
-                <option value="{{ customer.id }}">{{ customer.name }}{% if customer.email %} ({{ customer.email }}){% endif %}</option>
-                {% endfor %}
-            </select>
+            <label class="text-sm font-medium mb-1 block">{% trans "Subject" %}</label>
+            <input type="text" name="subject" class="input input-sm w-full" placeholder="{% trans 'Subject' %}">
         </div>
 
-        <!-- Category -->
         <div>
-            <label class="text-sm font-medium mb-1 block">{% trans "Category" %}</label>
-            <select name="category" class="select select-sm w-full">
-                <option value="">{% trans "Select category (optional)" %}</option>
-                {% for cat in categories %}
-                <option value="{{ cat.id }}">{{ cat.name }}</option>
-                {% endfor %}
-            </select>
+            <label class="text-sm font-medium mb-1 block">{% trans "Description" %}</label>
+            <textarea name="description" class="textarea textarea-sm w-full" rows="3"></textarea>
         </div>
 
-        <!-- Priority -->
         <div>
             <label class="text-sm font-medium mb-1 block">{% trans "Priority" %}</label>
             <select name="priority" class="select select-sm w-full">
-                <option value="low" {% if settings.default_priority == 'low' %}selected{% endif %}>{% trans "Low" %}</option>
-                <option value="medium" {% if settings.default_priority == 'medium' %}selected{% endif %}>{% trans "Medium" %}</option>
-                <option value="high" {% if settings.default_priority == 'high' %}selected{% endif %}>{% trans "High" %}</option>
-                <option value="urgent" {% if settings.default_priority == 'urgent' %}selected{% endif %}>{% trans "Urgent" %}</option>
+                <option value="">{% trans "Select..." %}</option>
             </select>
         </div>
 
-        <!-- Description -->
         <div>
-            <label class="text-sm font-medium mb-1 block">{% trans "Description" %}</label>
-            <textarea name="description" class="textarea textarea-sm w-full" rows="4"
-                      placeholder="{% trans 'Detailed description of the issue...' %}"></textarea>
+            <label class="text-sm font-medium mb-1 block">{% trans "Status" %}</label>
+            <select name="status" class="select select-sm w-full">
+                <option value="">{% trans "Select..." %}</option>
+            </select>
+        </div>
+
+        <div>
+            <label class="text-sm font-medium mb-1 block">{% trans "Assigned To" %}</label>
+            <input type="text" name="assigned_to" class="input input-sm w-full" placeholder="{% trans 'Assigned To' %}">
+        </div>
+
+        <div>
+            <label class="text-sm font-medium mb-1 block">{% trans "Assigned To Name" %}</label>
+            <input type="text" name="assigned_to_name" class="input input-sm w-full" placeholder="{% trans 'Assigned To Name' %}">
+        </div>
+
+        <div>
+            <label class="text-sm font-medium mb-1 block">{% trans "Related Sale" %}</label>
+            <input type="text" name="related_sale" class="input input-sm w-full" placeholder="{% trans 'Related Sale' %}">
+        </div>
+
+        <div>
+            <label class="text-sm font-medium mb-1 block">{% trans "Related Product" %}</label>
+            <input type="text" name="related_product" class="input input-sm w-full" placeholder="{% trans 'Related Product' %}">
+        </div>
+
+        <div>
+            <label class="text-sm font-medium mb-1 block">{% trans "First Response At" %}</label>
+            <input type="datetime-local" name="first_response_at" class="input input-sm w-full">
+        </div>
+
+        <div>
+            <label class="text-sm font-medium mb-1 block">{% trans "Resolved At" %}</label>
+            <input type="datetime-local" name="resolved_at" class="input input-sm w-full">
+        </div>
+
+        <div>
+            <label class="text-sm font-medium mb-1 block">{% trans "Closed At" %}</label>
+            <input type="datetime-local" name="closed_at" class="input input-sm w-full">
         </div>
     </form>
 </div>
 
-<!-- Footer -->
 <div class="side-sheet-footer">
     <div class="flex justify-end gap-2">
-        <button type="button" class="btn btn-ghost btn-sm" @click="closePanel()">
-            {% trans "Cancel" %}
-        </button>
+        <button type="button" class="btn btn-ghost btn-sm" @click="closePanel()">{% trans "Cancel" %}</button>
         <button type="submit" form="add-ticket-form" class="btn btn-sm color-primary">
-            {% icon "add-outline" %}
-            {% trans "Create Ticket" %}
+            {% icon "add-outline" %} {% trans "Add" %}
         </button>
     </div>
 </div>

@@ -1,0 +1,69 @@
+{% load djicons i18n %}
+
+<div class="side-sheet-header">
+    <h3 class="sheet-title">{% trans "Add Ticket Category" %}</h3>
+    <button class="sheet-close" @click="closePanel()">{% icon "close-outline" %}</button>
+</div>
+
+<div class="side-sheet-content">
+    <form id="add-ticket_category-form"
+          hx-post="{% url 'support:ticket_category_add' %}"
+          hx-target="#datatable-body"
+          hx-swap="innerHTML"
+          @htmx:after-request="closePanel()"
+          class="flex flex-col gap-4 p-6">
+        {% csrf_token %}
+
+        {% if error %}
+        <div class="callout callout-error">
+            <div class="callout-content"><span class="callout-text">{{ error }}</span></div>
+        </div>
+        {% endif %}
+
+        <div>
+            <label class="text-sm font-medium mb-1 block">{% trans "Name" %}</label>
+            <input type="text" name="name" class="input input-sm w-full" placeholder="{% trans 'Name' %}">
+        </div>
+
+        <div>
+            <label class="text-sm font-medium mb-1 block">{% trans "Description" %}</label>
+            <textarea name="description" class="textarea textarea-sm w-full" rows="3"></textarea>
+        </div>
+
+        <div>
+            <label class="text-sm font-medium mb-1 block">{% trans "Color" %}</label>
+            <select name="color" class="select select-sm w-full">
+                <option value="">{% trans "Select..." %}</option>
+            </select>
+        </div>
+
+        <div>
+            <label class="text-sm font-medium mb-1 block">{% trans "Icon" %}</label>
+            <select name="icon" class="select select-sm w-full">
+                <option value="">{% trans "Select..." %}</option>
+            </select>
+        </div>
+
+        <div>
+            <label class="text-sm font-medium mb-1 block">{% trans "Is Active" %}</label>
+            <label class="toggle color-success">
+                <input type="checkbox" name="is_active">
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            </label>
+        </div>
+
+        <div>
+            <label class="text-sm font-medium mb-1 block">{% trans "Sort Order" %}</label>
+            <input type="number" name="sort_order" class="input input-sm w-full"  placeholder="0">
+        </div>
+    </form>
+</div>
+
+<div class="side-sheet-footer">
+    <div class="flex justify-end gap-2">
+        <button type="button" class="btn btn-ghost btn-sm" @click="closePanel()">{% trans "Cancel" %}</button>
+        <button type="submit" form="add-ticket_category-form" class="btn btn-sm color-primary">
+            {% icon "add-outline" %} {% trans "Add" %}
+        </button>
+    </div>
+</div>

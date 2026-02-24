@@ -7,24 +7,20 @@ urlpatterns = [
     # Dashboard
     path('', views.dashboard, name='dashboard'),
 
-    # Tickets
-    path('list/', views.ticket_list, name='list'),
-    path('add/', views.ticket_add, name='add'),
-    path('<uuid:ticket_id>/', views.ticket_detail, name='detail'),
-    path('<uuid:ticket_id>/edit/', views.ticket_edit, name='edit'),
-    path('<uuid:ticket_id>/delete/', views.ticket_delete, name='delete'),
-    path('<uuid:ticket_id>/assign/', views.ticket_assign, name='assign'),
-    path('<uuid:ticket_id>/resolve/', views.ticket_resolve, name='resolve'),
-    path('<uuid:ticket_id>/close/', views.ticket_close, name='close'),
-    path('<uuid:ticket_id>/reopen/', views.ticket_reopen, name='reopen'),
-    path('<uuid:ticket_id>/message/', views.ticket_add_message, name='add_message'),
-    path('bulk/', views.ticket_bulk_action, name='bulk_action'),
+    # TicketCategory
+    path('ticket_categories/', views.ticket_categories_list, name='ticket_categories_list'),
+    path('ticket_categories/add/', views.ticket_category_add, name='ticket_category_add'),
+    path('ticket_categories/<uuid:pk>/edit/', views.ticket_category_edit, name='ticket_category_edit'),
+    path('ticket_categories/<uuid:pk>/delete/', views.ticket_category_delete, name='ticket_category_delete'),
+    path('ticket_categories/<uuid:pk>/toggle/', views.ticket_category_toggle_status, name='ticket_category_toggle_status'),
+    path('ticket_categories/bulk/', views.ticket_categories_bulk_action, name='ticket_categories_bulk_action'),
 
-    # Categories
-    path('categories/', views.categories, name='categories'),
-    path('categories/add/', views.category_add, name='category_add'),
-    path('categories/<uuid:category_id>/edit/', views.category_edit, name='category_edit'),
-    path('categories/<uuid:category_id>/delete/', views.category_delete, name='category_delete'),
+    # Ticket
+    path('tickets/', views.tickets_list, name='tickets_list'),
+    path('tickets/add/', views.ticket_add, name='ticket_add'),
+    path('tickets/<uuid:pk>/edit/', views.ticket_edit, name='ticket_edit'),
+    path('tickets/<uuid:pk>/delete/', views.ticket_delete, name='ticket_delete'),
+    path('tickets/bulk/', views.tickets_bulk_action, name='tickets_bulk_action'),
 
     # Settings
     path('settings/', views.settings_view, name='settings'),

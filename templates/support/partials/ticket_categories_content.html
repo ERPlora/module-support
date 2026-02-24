@@ -22,7 +22,7 @@
     clearSelection() { this.selectedIds = []; this.selectAll = false; },
     openPanel(url) {
         this.editUrl = url;
-        htmx.ajax('GET', url, { target: '#ticket-panel-content', swap: 'innerHTML' });
+        htmx.ajax('GET', url, { target: '#ticket_category-panel-content', swap: 'innerHTML' });
         this.panelOpen = true;
     },
     closePanel() { this.panelOpen = false; },
@@ -38,7 +38,7 @@
     }
 }">
 
-    <div class="datatable glass mt-5" id="tickets-datatable">
+    <div class="datatable glass mt-5" id="ticket_categories-datatable">
         <div class="datatable-toolbar">
             <div class="datatable-toolbar-start">
                 <label class="input input-sm datatable-search">
@@ -47,15 +47,15 @@
                            placeholder="{% trans 'Search...' %}"
                            value="{{ search_query|default:'' }}"
                            autocomplete="off"
-                           hx-get="{% url 'support:tickets_list' %}"
+                           hx-get="{% url 'support:ticket_categories_list' %}"
                            hx-target="#datatable-body"
-                           hx-include="#tickets-datatable"
+                           hx-include="#ticket_categories-datatable"
                            hx-trigger="input changed delay:300ms, search">
                 </label>
             </div>
             <div class="datatable-toolbar-end">
                 <button class="btn btn-sm btn-circle color-primary"
-                        @click="openPanel('{% url 'support:ticket_add' %}')"
+                        @click="openPanel('{% url 'support:ticket_category_add' %}')"
                         title="{% trans 'Add' %}">
                     {% icon "add-outline" %}
                 </button>
@@ -65,11 +65,11 @@
                     </summary>
                     <div class="dropdown-menu dropdown-menu-right">
                         <a class="dropdown-item" href="#"
-                           @click.prevent="open = false; window.location.href = '{% url 'support:tickets_list' %}?export=csv&' + new URLSearchParams({q: document.querySelector('[name=q]')?.value || ''}).toString()">
+                           @click.prevent="open = false; window.location.href = '{% url 'support:ticket_categories_list' %}?export=csv&' + new URLSearchParams({q: document.querySelector('[name=q]')?.value || ''}).toString()">
                             {% icon "document-text-outline" %} {% trans "Export as CSV" %}
                         </a>
                         <a class="dropdown-item" href="#"
-                           @click.prevent="open = false; window.location.href = '{% url 'support:tickets_list' %}?export=excel&' + new URLSearchParams({q: document.querySelector('[name=q]')?.value || ''}).toString()">
+                           @click.prevent="open = false; window.location.href = '{% url 'support:ticket_categories_list' %}?export=excel&' + new URLSearchParams({q: document.querySelector('[name=q]')?.value || ''}).toString()">
                             {% icon "document-text-outline" %} {% trans "Export as Excel" %}
                         </a>
                     </div>
@@ -84,11 +84,11 @@
                 <span>{% trans "selected" %}</span>
             </div>
             <div class="datatable-bulk-actions">
-                
-                
+                <button class='datatable-bulk-btn' hx-post="{% url 'support:ticket_categories_bulk_action' %}" hx-target='#datatable-body' hx-include='#ticket_categories-datatable' :hx-vals="JSON.stringify({ids: selectedIds.join(','), action: 'activate'})" @htmx:after-request='clearSelection()'>{% icon "checkmark-circle-outline" %} {% trans "Activate" %}</button>
+                <button class='datatable-bulk-btn' hx-post="{% url 'support:ticket_categories_bulk_action' %}" hx-target='#datatable-body' hx-include='#ticket_categories-datatable' :hx-vals="JSON.stringify({ids: selectedIds.join(','), action: 'deactivate'})" @htmx:after-request='clearSelection()'>{% icon "close-circle-outline" %} {% trans "Deactivate" %}</button>
                 <button class="datatable-bulk-btn datatable-bulk-btn-danger"
-                        hx-post="{% url 'support:tickets_bulk_action' %}"
-                        hx-target="#datatable-body" hx-include="#tickets-datatable"
+                        hx-post="{% url 'support:ticket_categories_bulk_action' %}"
+                        hx-target="#datatable-body" hx-include="#ticket_categories-datatable"
                         :hx-vals="JSON.stringify({ids: selectedIds.join(','), action: 'delete'})"
                         @htmx:after-request="clearSelection()">
                     {% icon "trash-outline" %} {% trans "Delete" %}
@@ -106,13 +106,13 @@
         <input type="hidden" name="per_page" value="{{ per_page|default:'10' }}">
 
         <div id="datatable-body">
-            {% include "support/partials/tickets_list.html" %}
+            {% include "support/partials/ticket_categories_list.html" %}
         </div>
     </div>
 
     <!-- Side Sheet -->
     <div class="sheet-backdrop" :class="{ 'is-open': panelOpen }" @click.self="closePanel()">
-        <div class="side-sheet side-sheet-right" id="ticket-panel-content"></div>
+        <div class="side-sheet side-sheet-right" id="ticket_category-panel-content"></div>
     </div>
 
     <!-- Delete Modal -->
