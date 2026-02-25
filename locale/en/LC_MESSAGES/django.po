@@ -1,0 +1,330 @@
+# English translations for Support
+# Copyright (C) 2025
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-25 00:00+0000\n"
+"PO-Revision-Date: 2026-02-25 00:00+0000\n"
+"Last-Translator: ERPlora Team <info@erplora.com>\n"
+"Language: en\n"
+"Language-Team: English\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: module.py
+msgid "Support"
+msgstr "Support"
+
+msgid "Customer support ticket system with SLA tracking"
+msgstr "Customer support ticket system with SLA tracking"
+
+msgid "Dashboard"
+msgstr "Dashboard"
+
+msgid "Tickets"
+msgstr "Tickets"
+
+msgid "Categories"
+msgstr "Categories"
+
+msgid "Settings"
+msgstr "Settings"
+
+#: models.py - CATEGORY_COLORS
+msgid "Blue"
+msgstr "Blue"
+
+msgid "Green"
+msgstr "Green"
+
+msgid "Orange"
+msgstr "Orange"
+
+msgid "Red"
+msgstr "Red"
+
+msgid "Gray"
+msgstr "Gray"
+
+#: models.py - CATEGORY_ICONS
+msgid "General"
+msgstr "General"
+
+msgid "Bug"
+msgstr "Bug"
+
+msgid "Product Issue"
+msgstr "Product Issue"
+
+msgid "Service Issue"
+msgstr "Service Issue"
+
+msgid "Billing"
+msgstr "Billing"
+
+msgid "Warranty"
+msgstr "Warranty"
+
+msgid "Complaint"
+msgstr "Complaint"
+
+msgid "Suggestion"
+msgstr "Suggestion"
+
+msgid "Feedback"
+msgstr "Feedback"
+
+#: models.py - TicketCategory
+msgid "Name"
+msgstr "Name"
+
+msgid "Description"
+msgstr "Description"
+
+msgid "Color"
+msgstr "Color"
+
+msgid "Icon"
+msgstr "Icon"
+
+msgid "Active"
+msgstr "Active"
+
+msgid "Sort Order"
+msgstr "Sort Order"
+
+msgid "Ticket Category"
+msgstr "Ticket Category"
+
+msgid "Ticket Categories"
+msgstr "Ticket Categories"
+
+#: models.py - PRIORITY_CHOICES
+msgid "Low"
+msgstr "Low"
+
+msgid "Medium"
+msgstr "Medium"
+
+msgid "High"
+msgstr "High"
+
+msgid "Urgent"
+msgstr "Urgent"
+
+#: models.py - SupportSettings
+msgid "Auto-assign tickets"
+msgstr "Auto-assign tickets"
+
+msgid "Automatically assign new tickets to available staff"
+msgstr "Automatically assign new tickets to available staff"
+
+msgid "Default Priority"
+msgstr "Default Priority"
+
+msgid "SLA First Response (hours)"
+msgstr "SLA First Response (hours)"
+
+msgid "Maximum hours for first response to a ticket"
+msgstr "Maximum hours for first response to a ticket"
+
+msgid "SLA Resolution (hours)"
+msgstr "SLA Resolution (hours)"
+
+msgid "Maximum hours for ticket resolution"
+msgstr "Maximum hours for ticket resolution"
+
+msgid "Enable Customer Notifications"
+msgstr "Enable Customer Notifications"
+
+msgid "Send email notifications to customers on ticket updates"
+msgstr "Send email notifications to customers on ticket updates"
+
+msgid "Auto-close Resolved After (days)"
+msgstr "Auto-close Resolved After (days)"
+
+msgid "Automatically close resolved tickets after this many days"
+msgstr "Automatically close resolved tickets after this many days"
+
+msgid "Support Settings"
+msgstr "Support Settings"
+
+#: models.py - TICKET_STATUS_CHOICES
+msgid "Open"
+msgstr "Open"
+
+msgid "In Progress"
+msgstr "In Progress"
+
+msgid "Waiting on Customer"
+msgstr "Waiting on Customer"
+
+msgid "Resolved"
+msgstr "Resolved"
+
+msgid "Closed"
+msgstr "Closed"
+
+#: models.py - Ticket
+msgid "Ticket Number"
+msgstr "Ticket Number"
+
+msgid "Auto-generated ticket reference number"
+msgstr "Auto-generated ticket reference number"
+
+msgid "Subject"
+msgstr "Subject"
+
+msgid "Customer"
+msgstr "Customer"
+
+msgid "Category"
+msgstr "Category"
+
+msgid "Priority"
+msgstr "Priority"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Assigned To"
+msgstr "Assigned To"
+
+msgid "UUID of the assigned staff member"
+msgstr "UUID of the assigned staff member"
+
+msgid "Assigned To Name"
+msgstr "Assigned To Name"
+
+msgid "Related Sale"
+msgstr "Related Sale"
+
+msgid "Related Product"
+msgstr "Related Product"
+
+msgid "First Response At"
+msgstr "First Response At"
+
+msgid "Resolved At"
+msgstr "Resolved At"
+
+msgid "Closed At"
+msgstr "Closed At"
+
+msgid "Ticket"
+msgstr "Ticket"
+
+#: models.py - TicketMessage
+msgid "Message"
+msgstr "Message"
+
+msgid "Author ID"
+msgstr "Author ID"
+
+msgid "Author Name"
+msgstr "Author Name"
+
+msgid "Internal Note"
+msgstr "Internal Note"
+
+msgid "Internal notes are only visible to staff"
+msgstr "Internal notes are only visible to staff"
+
+msgid "Attachments"
+msgstr "Attachments"
+
+msgid "List of attachment file paths or URLs"
+msgstr "List of attachment file paths or URLs"
+
+msgid "Ticket Message"
+msgstr "Ticket Message"
+
+msgid "Ticket Messages"
+msgstr "Ticket Messages"
+
+#: templates - tickets list
+msgid "Search..."
+msgstr "Search..."
+
+msgid "Add"
+msgstr "Add"
+
+msgid "Export"
+msgstr "Export"
+
+msgid "Export as CSV"
+msgstr "Export as CSV"
+
+msgid "Export as Excel"
+msgstr "Export as Excel"
+
+msgid "selected"
+msgstr "selected"
+
+msgid "Delete"
+msgstr "Delete"
+
+msgid "Confirm Delete"
+msgstr "Confirm Delete"
+
+msgid "Are you sure you want to delete"
+msgstr "Are you sure you want to delete"
+
+msgid "Cancel"
+msgstr "Cancel"
+
+msgid "Actions"
+msgstr "Actions"
+
+msgid "Edit"
+msgstr "Edit"
+
+msgid "Show"
+msgstr "Show"
+
+msgid "per page"
+msgstr "per page"
+
+msgid "Showing %(start)s-%(end)s of %(total)s"
+msgstr "Showing %(start)s-%(end)s of %(total)s"
+
+msgid "No items yet"
+msgstr "No items yet"
+
+msgid "Add your first item to get started"
+msgstr "Add your first item to get started"
+
+msgid "customers.Customer"
+msgstr "Customer"
+
+#: templates - category edit
+msgid "Edit Category"
+msgstr "Edit Category"
+
+msgid "Edit Ticket Category"
+msgstr "Edit Ticket Category"
+
+msgid "Category name"
+msgstr "Category name"
+
+msgid "Category description..."
+msgstr "Category description..."
+
+msgid "Save"
+msgstr "Save"
+
+msgid "Save Changes"
+msgstr "Save Changes"
+
+msgid "Danger Zone"
+msgstr "Danger Zone"
+
+msgid "Are you sure?"
+msgstr "Are you sure?"
+
+msgid "Is Active"
+msgstr "Is Active"
