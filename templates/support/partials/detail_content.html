@@ -1,17 +1,12 @@
 {% load djicons i18n %}
+<div data-back-url="{% url 'support:list' %}" hidden></div>
 
 <div class="p-4" x-data="{
     deleteModal: false,
     assignModal: false
 }">
-    <!-- Header with back button -->
+    <!-- Header -->
     <div class="flex items-center gap-4 mb-6">
-        <button class="btn btn-ghost btn-sm"
-                hx-get="{% url 'support:list' %}"
-                hx-target="#main-content-area"
-                hx-push-url="true">
-            {% icon "arrow-back-outline" %}
-        </button>
         <div class="flex-1">
             <div class="flex items-center gap-3">
                 <div class="w-12 h-12 bg-{% if ticket.priority == 'urgent' %}error{% elif ticket.priority == 'high' %}warning{% elif ticket.priority == 'medium' %}primary{% else %}neutral{% endif %}/10 rounded-full flex items-center justify-center">
