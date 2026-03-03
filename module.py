@@ -34,3 +34,21 @@ PERMISSIONS = [
     'support.manage_categories',
     'support.manage_settings',
 ]
+
+ROLE_PERMISSIONS = {
+    "admin": ["*"],
+    "manager": [
+        "add_ticket",
+        "assign_ticket",
+        "change_ticket",
+        "close_ticket",
+        "manage_categories",
+        "view_category",
+        "view_ticket",
+    ],
+    "employee": [
+        "add_ticket",
+        "view_category",
+        "view_ticket",
+    ],
+}
