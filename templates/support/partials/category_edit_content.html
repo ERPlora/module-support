@@ -1,0 +1,89 @@
+{% load djicons i18n %}
+<div data-back-url="{% url 'support:list' %}" hidden></div>
+
+<div class="p-4">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-bold">{% trans "Edit Category" %}</h1>
+        <div class="flex gap-2">
+            <a class="btn btn-ghost btn-sm"
+               hx-get="{% url 'support:list' %}"
+               hx-target="#main-content-area"
+               hx-push-url="true">
+                {% trans "Cancel" %}
+            </a>
+            <button type="submit" form="edit-category-form" class="btn btn-sm color-primary">
+                {% icon "checkmark-outline" %}
+                {% trans "Save" %}
+            </button>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <form id="edit-category-form"
+          hx-post="{% url 'support:category_edit' category_id=category.id %}" class="max-w-2xl">
+        {% csrf_token %}
+        <div class="card mb-4">
+            <div class="card-body flex flex-col gap-4">
+                <!-- Name -->
+                <div>
+                <label class="text-sm font-medium mb-1 block">{% trans "Name" %} *</label>
+                <input type="text" name="name" class="input input-sm w-full"
+                value="{{ category.name }}"
+                placeholder="{% trans 'Category name' %}" required>
+                </div>
+
+                <!-- Description -->
+                <div>
+                <label class="text-sm font-medium mb-1 block">{% trans "Description" %}</label>
+                <textarea name="description" class="textarea textarea-sm w-full" rows="2"
+                placeholder="{% trans 'Category description...' %}">{{ category.description }}</textarea>
+                </div>
+
+                <!-- Color -->
+                <div>
+                <label class="text-sm font-medium mb-1 block">{% trans "Color" %}</label>
+                <select name="color" class="select select-sm w-full">
+                <option value="primary" {% if category.color == 'primary' %}selected{% endif %}>{% trans "Blue" %}</option>
+                <option value="success" {% if category.color == 'success' %}selected{% endif %}>{% trans "Green" %}</option>
+                <option value="warning" {% if category.color == 'warning' %}selected{% endif %}>{% trans "Orange" %}</option>
+                <option value="error" {% if category.color == 'error' %}selected{% endif %}>{% trans "Red" %}</option>
+                <option value="neutral" {% if category.color == 'neutral' %}selected{% endif %}>{% trans "Gray" %}</option>
+                </select>
+                </div>
+
+                <!-- Icon -->
+                <div>
+                <label class="text-sm font-medium mb-1 block">{% trans "Icon" %}</label>
+                <select name="icon" class="select select-sm w-full">
+                <option value="help-circle-outline" {% if category.icon == 'help-circle-outline' %}selected{% endif %}>{% trans "General" %}</option>
+                <option value="bug-outline" {% if category.icon == 'bug-outline' %}selected{% endif %}>{% trans "Bug" %}</option>
+                <option value="construct-outline" {% if category.icon == 'construct-outline' %}selected{% endif %}>{% trans "Product Issue" %}</option>
+                <option value="cut-outline" {% if category.icon == 'cut-outline' %}selected{% endif %}>{% trans "Service Issue" %}</option>
+                <option value="card-outline" {% if category.icon == 'card-outline' %}selected{% endif %}>{% trans "Billing" %}</option>
+                <option value="shield-checkmark-outline" {% if category.icon == 'shield-checkmark-outline' %}selected{% endif %}>{% trans "Warranty" %}</option>
+                <option value="alert-circle-outline" {% if category.icon == 'alert-circle-outline' %}selected{% endif %}>{% trans "Complaint" %}</option>
+                <option value="bulb-outline" {% if category.icon == 'bulb-outline' %}selected{% endif %}>{% trans "Suggestion" %}</option>
+                <option value="chatbox-outline" {% if category.icon == 'chatbox-outline' %}selected{% endif %}>{% trans "Feedback" %}</option>
+                </select>
+                </div>
+
+                <!-- Active -->
+                <div class="flex items-center justify-between">
+                <label class="text-sm font-medium">{% trans "Active" %}</label>
+                <label class="toggle toggle-sm color-success">
+                <input type="checkbox" name="is_active" {% if category.is_active %}checked{% endif %}>
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                </label>
+                </div>
+
+                <!-- Sort Order -->
+                <div>
+                <label class="text-sm font-medium mb-1 block">{% trans "Sort Order" %}</label>
+                <input type="number" name="sort_order" class="input input-sm w-full"
+                min="0" value="{{ category.sort_order }}" placeholder="0">
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

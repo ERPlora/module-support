@@ -1,0 +1,79 @@
+{% load djicons i18n %}
+<div data-back-url="{% url 'support:list' %}" hidden></div>
+
+<div class="p-4">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-bold">{% trans "Add Category" %}</h1>
+        <div class="flex gap-2">
+            <a class="btn btn-ghost btn-sm"
+               hx-get="{% url 'support:list' %}"
+               hx-target="#main-content-area"
+               hx-push-url="true">
+                {% trans "Cancel" %}
+            </a>
+            <button type="submit" form="add-category-form" class="btn btn-sm color-primary">
+                {% icon "checkmark-outline" %}
+                {% trans "Save" %}
+            </button>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <form id="add-category-form"
+          hx-post="{% url 'support:category_add' %}" class="max-w-2xl">
+        {% csrf_token %}
+        <div class="card mb-4">
+            <div class="card-body flex flex-col gap-4">
+                <!-- Name -->
+                <div>
+                <label class="text-sm font-medium mb-1 block">{% trans "Name" %} *</label>
+                <input type="text" name="name" class="input input-sm w-full"
+                placeholder="{% trans 'Category name' %}" required>
+                </div>
+
+                <!-- Description -->
+                <div>
+                <label class="text-sm font-medium mb-1 block">{% trans "Description" %}</label>
+                <textarea name="description" class="textarea textarea-sm w-full" rows="2"
+                placeholder="{% trans 'Category description...' %}"></textarea>
+                </div>
+
+                <!-- Color -->
+                <div>
+                <label class="text-sm font-medium mb-1 block">{% trans "Color" %}</label>
+                <select name="color" class="select select-sm w-full">
+                <option value="primary">{% trans "Blue" %}</option>
+                <option value="success">{% trans "Green" %}</option>
+                <option value="warning">{% trans "Orange" %}</option>
+                <option value="error">{% trans "Red" %}</option>
+                <option value="neutral">{% trans "Gray" %}</option>
+                </select>
+                </div>
+
+                <!-- Icon -->
+                <div>
+                <label class="text-sm font-medium mb-1 block">{% trans "Icon" %}</label>
+                <select name="icon" class="select select-sm w-full">
+                <option value="help-circle-outline">{% trans "General" %}</option>
+                <option value="bug-outline">{% trans "Bug" %}</option>
+                <option value="construct-outline">{% trans "Product Issue" %}</option>
+                <option value="cut-outline">{% trans "Service Issue" %}</option>
+                <option value="card-outline">{% trans "Billing" %}</option>
+                <option value="shield-checkmark-outline">{% trans "Warranty" %}</option>
+                <option value="alert-circle-outline">{% trans "Complaint" %}</option>
+                <option value="bulb-outline">{% trans "Suggestion" %}</option>
+                <option value="chatbox-outline">{% trans "Feedback" %}</option>
+                </select>
+                </div>
+
+                <!-- Sort Order -->
+                <div>
+                <label class="text-sm font-medium mb-1 block">{% trans "Sort Order" %}</label>
+                <input type="number" name="sort_order" class="input input-sm w-full"
+                min="0" value="0" placeholder="0">
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

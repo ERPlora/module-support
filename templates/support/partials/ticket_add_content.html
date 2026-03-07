@@ -1,0 +1,99 @@
+{% load djicons i18n %}
+<div data-back-url="{% url 'support:tickets_list' %}" hidden></div>
+
+<div class="p-4">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-bold">{% trans "Add Ticket" %}</h1>
+        <div class="flex gap-2">
+            <a class="btn btn-ghost btn-sm"
+               hx-get="{% url 'support:tickets_list' %}"
+               hx-target="#main-content-area"
+               hx-push-url="true">
+                {% trans "Cancel" %}
+            </a>
+            <button type="submit" form="add-ticket-form" class="btn btn-sm color-primary">
+                {% icon "checkmark-outline" %}
+                {% trans "Save" %}
+            </button>
+        </div>
+    </div>
+
+        {% if error %}
+        <div class="callout callout-error">
+            <div class="callout-content"><span class="callout-text">{{ error }}</span></div>
+        </div>
+        {% endif %}
+    <!-- Form -->
+    <form id="add-ticket-form"
+          hx-post="{% url 'support:ticket_add' %}" class="max-w-2xl">
+        {% csrf_token %}
+        <div class="card mb-4">
+            <div class="card-body flex flex-col gap-4">
+                <div>
+                <label class="text-sm font-medium mb-1 block">{% trans "Ticket Number" %}</label>
+                <input type="text" name="ticket_number" class="input input-sm w-full" placeholder="{% trans 'Ticket Number' %}">
+                </div>
+
+                <div>
+                <label class="text-sm font-medium mb-1 block">{% trans "Subject" %}</label>
+                <input type="text" name="subject" class="input input-sm w-full" placeholder="{% trans 'Subject' %}">
+                </div>
+
+                <div>
+                <label class="text-sm font-medium mb-1 block">{% trans "Description" %}</label>
+                <textarea name="description" class="textarea textarea-sm w-full" rows="3"></textarea>
+                </div>
+
+                <div>
+                <label class="text-sm font-medium mb-1 block">{% trans "Priority" %}</label>
+                <select name="priority" class="select select-sm w-full">
+                <option value="">{% trans "Select..." %}</option>
+                </select>
+                </div>
+
+                <div>
+                <label class="text-sm font-medium mb-1 block">{% trans "Status" %}</label>
+                <select name="status" class="select select-sm w-full">
+                <option value="">{% trans "Select..." %}</option>
+                </select>
+                </div>
+
+                <div>
+                <label class="text-sm font-medium mb-1 block">{% trans "Assigned To" %}</label>
+                <input type="text" name="assigned_to" class="input input-sm w-full" placeholder="{% trans 'Assigned To' %}">
+                </div>
+
+                <div>
+                <label class="text-sm font-medium mb-1 block">{% trans "Assigned To Name" %}</label>
+                <input type="text" name="assigned_to_name" class="input input-sm w-full" placeholder="{% trans 'Assigned To Name' %}">
+                </div>
+
+                <div>
+                <label class="text-sm font-medium mb-1 block">{% trans "Related Sale" %}</label>
+                <input type="text" name="related_sale" class="input input-sm w-full" placeholder="{% trans 'Related Sale' %}">
+                </div>
+
+                <div>
+                <label class="text-sm font-medium mb-1 block">{% trans "Related Product" %}</label>
+                <input type="text" name="related_product" class="input input-sm w-full" placeholder="{% trans 'Related Product' %}">
+                </div>
+
+                <div>
+                <label class="text-sm font-medium mb-1 block">{% trans "First Response At" %}</label>
+                <input type="datetime-local" name="first_response_at" class="input input-sm w-full">
+                </div>
+
+                <div>
+                <label class="text-sm font-medium mb-1 block">{% trans "Resolved At" %}</label>
+                <input type="datetime-local" name="resolved_at" class="input input-sm w-full">
+                </div>
+
+                <div>
+                <label class="text-sm font-medium mb-1 block">{% trans "Closed At" %}</label>
+                <input type="datetime-local" name="closed_at" class="input input-sm w-full">
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
