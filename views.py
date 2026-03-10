@@ -17,7 +17,7 @@ from apps.modules_runtime.navigation import with_module_nav
 
 from .models import TicketCategory, SupportSettings, Ticket, TicketMessage
 
-PER_PAGE_CHOICES = [10, 25, 50, 100]
+PER_PAGE_CHOICES = [12, 24, 48, 96, 0]
 
 
 # ======================================================================
@@ -51,7 +51,7 @@ TICKET_CATEGORY_SORT_FIELDS = {
 
 def _build_ticket_categories_context(hub_id, per_page=10):
     qs = TicketCategory.objects.filter(hub_id=hub_id, is_deleted=False).order_by('name')
-    paginator = Paginator(qs, per_page)
+    paginator = Paginator(qs, per_page if per_page > 0 else max(qs.count(), 1))
     page_obj = paginator.get_page(1)
     return {
         'ticket_categories': page_obj,
@@ -77,9 +77,9 @@ def ticket_categories_list(request):
     sort_dir = request.GET.get('dir', 'asc')
     page_number = request.GET.get('page', 1)
     current_view = request.GET.get('view', 'table')
-    per_page = int(request.GET.get('per_page', 10))
+    per_page = int(request.GET.get('per_page', 12))
     if per_page not in PER_PAGE_CHOICES:
-        per_page = 10
+        per_page = 12
 
     qs = TicketCategory.objects.filter(hub_id=hub_id, is_deleted=False)
 
@@ -99,7 +99,7 @@ def ticket_categories_list(request):
             return export_to_csv(qs, fields=fields, headers=headers, filename='ticket_categories.csv')
         return export_to_excel(qs, fields=fields, headers=headers, filename='ticket_categories.xlsx')
 
-    paginator = Paginator(qs, per_page)
+    paginator = Paginator(qs, per_page if per_page > 0 else max(qs.count(), 1))
     page_obj = paginator.get_page(page_number)
 
     if request.htmx and request.htmx.target == 'datatable-body':
@@ -206,7 +206,7 @@ TICKET_SORT_FIELDS = {
 
 def _build_tickets_context(hub_id, per_page=10):
     qs = Ticket.objects.filter(hub_id=hub_id, is_deleted=False).order_by('subject')
-    paginator = Paginator(qs, per_page)
+    paginator = Paginator(qs, per_page if per_page > 0 else max(qs.count(), 1))
     page_obj = paginator.get_page(1)
     return {
         'tickets': page_obj,
@@ -232,9 +232,9 @@ def tickets_list(request):
     sort_dir = request.GET.get('dir', 'asc')
     page_number = request.GET.get('page', 1)
     current_view = request.GET.get('view', 'table')
-    per_page = int(request.GET.get('per_page', 10))
+    per_page = int(request.GET.get('per_page', 12))
     if per_page not in PER_PAGE_CHOICES:
-        per_page = 10
+        per_page = 12
 
     qs = Ticket.objects.filter(hub_id=hub_id, is_deleted=False)
 
@@ -254,7 +254,7 @@ def tickets_list(request):
             return export_to_csv(qs, fields=fields, headers=headers, filename='tickets.csv')
         return export_to_excel(qs, fields=fields, headers=headers, filename='tickets.xlsx')
 
-    paginator = Paginator(qs, per_page)
+    paginator = Paginator(qs, per_page if per_page > 0 else max(qs.count(), 1))
     page_obj = paginator.get_page(page_number)
 
     if request.htmx and request.htmx.target == 'datatable-body':
